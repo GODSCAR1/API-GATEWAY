@@ -39,7 +39,17 @@ spring:
                         - name: JwtAuthenticationFilter
                         - name: RoleAuthorizationFilter
                           args:
-                            allowedRoles: ADMIN       # Solo SOLICITANTE
+                            allowedRoles: ADMIN,ASESOR
+                    - id: create-solicitud
+                      uri: http://localhost:8081
+                      predicates:
+                        - Path=/api/v1/solicitud
+                      filters:
+                        - StripPrefix=0
+                        - name: JwtAuthenticationFilter
+                        - name: RoleAuthorizationFilter
+                          args:
+                            allowedRoles: CLIENTE
 # Configuración JWT (misma que en microservicios)
 jwt:
   secret: bWlDbGF2ZVNlY3JldGFNdXlMYXJnYVBhcmFKV1RDb25BbE1lbm9zMzJDYXJhY3RlcmVzUGFyYVNlZ3VyaWRhZA==
