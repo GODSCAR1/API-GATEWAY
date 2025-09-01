@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(':model')
+    implementation project(':usecase')
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webflux:4.3.0'
+}

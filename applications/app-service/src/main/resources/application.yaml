@@ -1,0 +1,46 @@
+##Spring Configuration
+server:
+  port: 8083
+
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+                    # RUTAS PÚBLICAS (sin filtros)
+                    - id: login
+                      uri: http://localhost:8080
+                      predicates:
+                        - Path=/api/v1/login
+                      filters:
+                        - StripPrefix=0  # Quita /api/auth de la URL
+
+                    # RUTAS PROTEGIDAS (con JWT + rol específico)
+                    - id: create-solicitante
+                      uri: http://localhost:8080
+                      predicates:
+                        - Path=/api/v1/usuario
+                      filters:
+                        - StripPrefix=0
+                        - name: JwtAuthenticationFilter
+                        - name: RoleAuthorizationFilter
+                          args:
+                              allowedRoles: ADMIN,ASESOR
+
+                    - id: update-to-client
+                      uri: http://localhost:8080
+                      predicates:
+                        - Path=/api/v1/usuario/update/{email}
+                      filters:
+                        - StripPrefix=0
+                        - name: JwtAuthenticationFilter
+                        - name: RoleAuthorizationFilter
+                          args:
+                            allowedRoles: ADMIN       # Solo SOLICITANTE
+# Configuración JWT (misma que en microservicios)
+jwt:
+  secret: bWlDbGF2ZVNlY3JldGFNdXlMYXJnYVBhcmFKV1RDb25BbE1lbm9zMzJDYXJhY3RlcmVzUGFyYVNlZ3VyaWRhZA==
+  expiration: 86400000  # 24 horas
