@@ -40,7 +40,11 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
                         // 4. Continuar hacia el microservicio
                         return chain.filter(exchange.mutate().request(modifiedRequest).build());
                     })
-                    .doOnError(error -> log.severe(String.format("Error de autenticación: %s", error.getMessage())));
+                    .doOnError(error -> log.severe(String.format("Error de autenticación: %s", error.getMessage())))
+                    .onErrorResume(error -> {
+                        exchange.getResponse().setStatusCode(org.springframework.http.HttpStatus.UNAUTHORIZED);
+                        return exchange.getResponse().setComplete();
+                    });
         };
     }
     @Getter

@@ -41,6 +41,7 @@ public class JwtValidationAdapter implements JwtValidationGateway {
     }
 
     private Claims parseToken(String token) {
+
         SecretKey key = getSigningKey();
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
