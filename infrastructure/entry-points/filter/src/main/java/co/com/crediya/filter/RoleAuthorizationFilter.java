@@ -27,7 +27,7 @@ public class RoleAuthorizationFilter extends AbstractGatewayFilterFactory<RoleAu
 
             // 2. Verificar si el rol está en la lista permitida
             if (!config.getAllowedRoles().contains(userRole)) {
-                return Mono.error(new RolAuthorizationException("Rol no autorizado"));
+                return Mono.error(new RolAuthorizationException("Rol no autorizado: " + userRole));
             }
 
             // 3. Continuar si el rol es válido
