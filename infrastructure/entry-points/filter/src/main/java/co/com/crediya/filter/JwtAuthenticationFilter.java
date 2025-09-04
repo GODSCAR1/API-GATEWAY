@@ -24,20 +24,20 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
             log.info("Iniciando filtro de autenticación");
-            // 1. Obtener token del header Authorization
+
             String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
 
-            // 2. Validar JWT
+
             return jwtValidationUseCase.validateAndExtractUsuarioToken(authHeader)
                     .flatMap(userInfo -> {
-                        // 3. Agregar headers con info del usuario
+
                         ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
                                 .header("X-User-Id", userInfo.getUsuarioId())
                                 .header("X-User-Email", userInfo.getEmail())
                                 .header("X-User-Role", userInfo.getRole())
                                 .build();
 
-                        // 4. Continuar hacia el microservicio
+
                         return chain.filter(exchange.mutate().request(modifiedRequest).build());
                     })
                     .doOnError(error -> log.severe(String.format("Error de autenticación: %s", error.getMessage())))

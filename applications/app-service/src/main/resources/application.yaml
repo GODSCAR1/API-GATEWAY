@@ -1,56 +1,70 @@
-##Spring Configuration
 server:
-  port: 8083
+  port: ${SERVER_PORT:8083}
 
 spring:
   application:
-    name: API-GATEWAY
+    name: ${SPRING_APPLICATION_NAME:API-GATEWAY}
   cloud:
     gateway:
       server:
         webflux:
           routes:
-                    # RUTAS PÚBLICAS (sin filtros)
-                    - id: login
-                      uri: http://localhost:8080
-                      predicates:
-                        - Path=/api/v1/login
-                      filters:
-                        - StripPrefix=0  # Quita /api/auth de la URL
+            # RUTAS PÚBLICAS (sin filtros)
+            - id: login
+              uri: ${LOGIN_SERVICE_URI:http://localhost:8080}
+              predicates:
+                - Path=${LOGIN_PATH:/api/v1/login}
+              filters:
+                - StripPrefix=${LOGIN_STRIP_PREFIX:0}  # Quita /api/auth de la URL
 
-                    # RUTAS PROTEGIDAS (con JWT + rol específico)
-                    - id: create-solicitante
-                      uri: http://localhost:8080
-                      predicates:
-                        - Path=/api/v1/usuario
-                      filters:
-                        - StripPrefix=0
-                        - name: JwtAuthenticationFilter
-                        - name: RoleAuthorizationFilter
-                          args:
-                              allowedRoles: ADMIN,ASESOR
+            # RUTAS PROTEGIDAS (con JWT + rol específico)
+            - id: create-solicitante
+              uri: ${USER_SERVICE_URI:http://localhost:8080}
+              predicates:
+                - Path=${CREATE_USER_PATH:/api/v1/usuario}
+              filters:
+                - StripPrefix=${CREATE_USER_STRIP_PREFIX:0}
+                - name: JwtAuthenticationFilter
+                - name: RoleAuthorizationFilter
+                  args:
+                    allowedRoles: ${CREATE_USER_ALLOWED_ROLES:ADMIN,ASESOR}
 
-                    - id: update-to-client
-                      uri: http://localhost:8080
-                      predicates:
-                        - Path=/api/v1/usuario/update/{email}
-                      filters:
-                        - StripPrefix=0
-                        - name: JwtAuthenticationFilter
-                        - name: RoleAuthorizationFilter
-                          args:
-                            allowedRoles: ADMIN,ASESOR
-                    - id: create-solicitud
-                      uri: http://localhost:8081
-                      predicates:
-                        - Path=/api/v1/solicitud
-                      filters:
-                        - StripPrefix=0
-                        - name: JwtAuthenticationFilter
-                        - name: RoleAuthorizationFilter
-                          args:
-                            allowedRoles: CLIENTE
+            - id: update-to-client
+              uri: ${USER_SERVICE_URI:http://localhost:8080}
+              predicates:
+                - Path=${UPDATE_USER_PATH:/api/v1/usuario/update/{email}}
+              filters:
+                - StripPrefix=${UPDATE_USER_STRIP_PREFIX:0}
+                - name: JwtAuthenticationFilter
+                - name: RoleAuthorizationFilter
+                  args:
+                    allowedRoles: ${UPDATE_USER_ALLOWED_ROLES:ADMIN,ASESOR}
+
+            - id: create-solicitud
+              uri: ${SOLICITUD_SERVICE_URI:http://localhost:8081}
+              predicates:
+                - Path=${CREATE_SOLICITUD_PATH:/api/v1/solicitud}
+                - Method=${CREATE_SOLICITUD_METHOD:POST}
+              filters:
+                - StripPrefix=${CREATE_SOLICITUD_STRIP_PREFIX:0}
+                - name: JwtAuthenticationFilter
+                - name: RoleAuthorizationFilter
+                  args:
+                    allowedRoles: ${CREATE_SOLICITUD_ALLOWED_ROLES:CLIENTE}
+
+            - id: get-solicitudes
+              uri: ${SOLICITUD_SERVICE_URI:http://localhost:8081}
+              predicates:
+                - Path=${GET_SOLICITUDES_PATH:/api/v1/solicitud/{nombreEstado}}
+                - Method=${GET_SOLICITUDES_METHOD:GET}
+              filters:
+                - StripPrefix=${GET_SOLICITUDES_STRIP_PREFIX:0}
+                - name: JwtAuthenticationFilter
+                - name: RoleAuthorizationFilter
+                  args:
+                    allowedRoles: ${GET_SOLICITUDES_ALLOWED_ROLES:ASESOR}
+
 # Configuración JWT (misma que en microservicios)
 jwt:
-  secret: bWlDbGF2ZVNlY3JldGFNdXlMYXJnYVBhcmFKV1RDb25BbE1lbm9zMzJDYXJhY3RlcmVzUGFyYVNlZ3VyaWRhZA==
-  expiration: 86400000  # 24 horas
+  secret: ${JWT_SECRET:bWlDbGF2ZVNlY3JldGFNdXlMYXJnYVBhcmFKV1RDb25BbE1lbm9zMzJDYXJhY3RlcmVzUGFyYVNlZ3VyaWRhZA==}
+  expiration: ${JWT_EXPIRATION:86400000}  
