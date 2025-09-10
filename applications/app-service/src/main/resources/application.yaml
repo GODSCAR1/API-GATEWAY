@@ -64,7 +64,46 @@ spring:
                   args:
                     allowedRoles: ${GET_SOLICITUDES_ALLOWED_ROLES:ASESOR}
 
+            - id: aprove-solicitud
+              uri: ${SOLICITUD_SERVICE_URI:http://localhost:8081}
+              predicates:
+                - Path=${APROVE_SOLICITUD_PATH:/api/v1/solicitud/aprove/{id}}
+                - Method=${APROVE_SOLICITUD_METHOD:PUT}
+              filters:
+                - StripPrefix=${APROVE_SOLICITUD_STRIP_PREFIX:0}
+                - name: JwtAuthenticationFilter
+                - name: RoleAuthorizationFilter
+                  args:
+                    allowedRoles: ${APROVE_SOLICITUD_ALLOWED_ROLES:ASESOR}
+
+            - id: reject-solicitud
+              uri: ${SOLICITUD_SERVICE_URI:http://localhost:8081}
+              predicates:
+                - Path=${REJECT_SOLICITUD_PATH:/api/v1/solicitud/reject/{id}}
+                - Method=${REJECT_SOLICITUD_METHOD:PUT}
+              filters:
+                - StripPrefix=${REJECT_SOLICITUD_STRIP_PREFIX:0}
+                - name: JwtAuthenticationFilter
+                - name: RoleAuthorizationFilter
+                  args:
+                    allowedRoles: ${REJECT_SOLICITUD_ALLOWED_ROLES:ASESOR}
+
+
 # Configuración JWT (misma que en microservicios)
 jwt:
   secret: ${JWT_SECRET:bWlDbGF2ZVNlY3JldGFNdXlMYXJnYVBhcmFKV1RDb25BbE1lbm9zMzJDYXJhY3RlcmVzUGFyYVNlZ3VyaWRhZA==}
-  expiration: ${JWT_EXPIRATION:86400000}  
+  expiration: ${JWT_EXPIRATION:86400000}
+
+management:
+  # Configuración de endpoints
+  endpoints:
+    web:
+      exposure:
+        # Exponer endpoints específicos (más seguro)
+        include: health,info
+      base-path: /actuator
+
+  # Configuración específica del endpoint de health
+  endpoint:
+    health:
+      show-details: always
