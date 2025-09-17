@@ -1,5 +1,6 @@
 package co.com.crediya.jwtvalidationadapter;
 
+import co.com.crediya.jwtvalidationadapter.message.JwtValidationMessage;
 import co.com.crediya.model.usuarioinfo.UsuarioInfo;
 import co.com.crediya.model.usuarioinfo.gateways.JwtValidationGateway;
 import io.jsonwebtoken.Claims;
@@ -52,7 +53,7 @@ public class JwtValidationAdapter implements JwtValidationGateway {
         if(claims.getExpiration() != null && claims.getExpiration().before(new Date())) {
             throw new ExpiredJwtException(null, claims, "Token expirado");
         }
-        log.info("Token parseado exitosamente");
+        log.info(JwtValidationMessage.TOKEN_PARSEADO_EXITOSO.getMensaje());
         return claims;
     }
     @Override
