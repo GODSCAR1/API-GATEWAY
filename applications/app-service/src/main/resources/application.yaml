@@ -17,6 +17,63 @@ spring:
               filters:
                 - StripPrefix=${LOGIN_STRIP_PREFIX:0}  # Quita /api/auth de la URL
 
+            - id: solicitudes-swagger
+              uri: ${SOLICITUD_SERVICE_URI:http://localhost:8081}
+              predicates:
+                - Path=/solicitudes/swagger-ui/**
+              filters:
+                - RewritePath=/solicitudes/(?<segment>.*), /$\{segment}
+
+            - id: solicitudes-api-docs-base
+              uri: ${SOLICITUD_SERVICE_URI:http://localhost:8081}
+              predicates:
+                - Path=/solicitudes/v3/api-docs
+              filters:
+                - RewritePath=/solicitudes/(?<segment>.*), /$\{segment}
+
+            - id: solicitudes-api-docs
+              uri: ${SOLICITUD_SERVICE_URI:http://localhost:8081}
+              predicates:
+                - Path=/solicitudes/v3/api-docs/**
+              filters:
+                - RewritePath=/solicitudes/(?<segment>.*), /$\{segment}
+
+            - id: solicitudes-swagger-config
+              uri: ${SOLICITUD_SERVICE_URI:http://solicitudes-service:8081}
+              predicates:
+                - Path=/solicitudes/v3/api-docs/swagger-config
+              filters:
+                - RewritePath=/solicitudes/(?<segment>.*), /$\{segment}
+
+            - id: autenticacion-swagger
+              uri: ${USER_SERVICE_URI:http://localhost:8080}
+              predicates:
+                - Path=/autenticacion/swagger-ui/**
+              filters:
+                - RewritePath=/autenticacion/(?<segment>.*), /$\{segment}
+
+            - id: autenticacion-api-docs-base
+              uri: ${USER_SERVICE_URI:http://localhost:8080}
+              predicates:
+                - Path=/autenticacion/v3/api-docs
+              filters:
+                - RewritePath=/autenticacion/(?<segment>.*), /$\{segment}
+
+            - id: autenticacion-api-docs
+              uri: ${USER_SERVICE_URI:http://localhost:8080}
+              predicates:
+                - Path=/autenticacion/v3/api-docs/**
+              filters:
+                - RewritePath=/autenticacion/(?<segment>.*), /$\{segment}
+
+            - id: autenticacion-swagger-config
+              uri: ${USER_SERVICE_URI:http://autenticacion-service:8080}
+              predicates:
+                - Path=/autenticacion/v3/api-docs/swagger-config
+              filters:
+                - RewritePath=/autenticacion/(?<segment>.*), /$\{segment}
+
+
             # RUTAS PROTEGIDAS (con JWT + rol específico)
             - id: create-solicitante
               uri: ${USER_SERVICE_URI:http://localhost:8080}
